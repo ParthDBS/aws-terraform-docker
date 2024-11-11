@@ -59,17 +59,25 @@
         groups: docker
         append: yes
 
+    # Copy index.html to the server
+    - name: Copy custom index.html to server
+      copy:
+        src: ./index.html  # Local file path (same folder as docker.yml)
+        dest: /home/ubuntu/index.html  # Destination on the server
+
     # Pull Nginx Docker image
     - name: Pull Nginx Docker image
       community.docker.docker_image:
         name: nginx
         source: pull
 
-    # Run Nginx container
-    - name: Run Nginx container
+    # Run Nginx container with mounted index.html
+    - name: Run Nginx container with custom index.html
       community.docker.docker_container:
         name: nginx
         image: nginx
         state: started
         ports:
           - "80:80"
+        volumes:
+          - /home/ubuntu/index.html:/usr/share/nginx/html/index.html  # Mount the custom index.html
